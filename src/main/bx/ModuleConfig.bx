@@ -41,12 +41,12 @@ class {
 	/**
 	 * Who built the module
 	 */
-	this.author = "Luis Majano";
+	this.author = "Ortus Solutions";
 
 	/**
 	 * The module description
 	 */
-	this.description = "This module does amazing things";
+	this.description = "BoxLang HTML UI Module for Forms and Form Tags Generation";
 
 	/**
 	 * The module web URL
@@ -73,7 +73,7 @@ class {
 		 */
 		settings = {
 			loadedOn : now(),
-			loadedBy : "Luis Majano"
+			loadedBy : "Boxlang Runtime"
 		};
 
 		/**
@@ -100,18 +100,12 @@ class {
 		/**
 		 * The module interceptors to register into the runtime
 		 */
-		interceptors = [
-			// { class="path.to.Interceptor", properties={} }
-			{ class : "#moduleRecord.invocationPath#.interceptors.Listener", properties : {
-				createdOn : now(),
-				by : "Luis Majano"
-			} }
-		];
+		interceptors = [];
 
 		/**
 		 * A list of custom interception points to register into the runtime
 		 */
-		customInterceptionPoints = [ "onBxTestModule" ];
+		customInterceptionPoints = [];
 	}
 
 	/**

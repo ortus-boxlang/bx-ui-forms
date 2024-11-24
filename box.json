@@ -1,22 +1,22 @@
 {
-	"name": "@MODULE_NAME@",
+	"name": "Boxlang UI Forms Module",
 	"version": "@build.version@+@build.number@",
-	"location": "https://downloads.ortussolutions.com/ortussolutions/boxlang-modules/@MODULE_SLUG@/@build.version@/@MODULE_SLUG@-@build.version@.zip",
+	"location": "https://downloads.ortussolutions.com/ortussolutions/boxlang-modules/bx-ui-forms/@build.version@/bx-ui-forms-@build.version@.zip",
 	"author": "Ortus Solutions",
-	"homepage": "https://github.com/boxlang-modules/@MODULE_SLUG@",
-	"documentation": "https://github.com/boxlang-modules/@MODULE_SLUG@",
+	"homepage": "https://github.com/boxlang-modules/bx-ui-forms",
+	"documentation": "https://github.com/boxlang-modules/bx-ui-forms",
 	"repository": {
 		"type": "git",
-		"URL": "https://github.com/boxlang-modules/@MODULE_SLUG@"
+		"URL": "https://github.com/boxlang-modules/bx-ui-forms"
 	},
-	"bugs": "https://github.com/boxlang-modules/@MODULE_SLUG@/issues",
-	"slug": "@MODULE_SLUG@",
-	"shortDescription": "Module template for BoxLang modules",
+	"bugs": "https://github.com/boxlang-modules/bx-ui-forms/issues",
+	"slug": "bx-ui-forms",
+	"shortDescription": "BoxLang HTML UI Module for Forms and Form Tags Generation",
 	"type": "boxlang-modules",
 	"keywords": ["boxlang"],
 	"boxlang": {
 		"minimumVersion": "1.0.0",
-		"moduleName": "@MODULE_REGISTERED_NAME@"
+		"moduleName": "ui-forms"
 	},
 	"private": false,
 	"license": [
@@ -25,6 +25,9 @@
 			"URL": "https://www.apache.org/licenses/LICENSE-2.0"
 		}
 	],
+	"dependencies": {
+		"bx-esapi": "*"
+	},
 	"devDependencies": {
 		"commandbox-cfformat": "*",
 		"commandbox-docbox": "*",
@@ -42,7 +45,6 @@
 		"gradle/**"
 	],
 	"scripts": {
-		"setupTemplate": "task run taskFile=src/build/SetupTemplate.cfc",
 		"onRelease": "publish"
 	}
 }

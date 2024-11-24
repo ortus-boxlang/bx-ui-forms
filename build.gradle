@@ -211,6 +211,27 @@ task downloadBoxLang( type: Download ) {
     onlyIfModified false
 }
 
+
+/**
+ * TEMPORARY until we publish to maven
+ * Download the zip file from https://downloads.ortussolutions.com/ortussolutions/boxlang-modules/bx-esapi/1.1.0/bx-esapi-1.1.0.zip
+ */
+task downloadESAPIModule( type: Download ) {
+    // Configure the URL of the file to download
+    src "https://downloads.ortussolutions.com/ortussolutions/boxlang-modules/bx-esapi/${ESAPIModuleVersion}/bx-esapi-${ESAPIModuleVersion}.zip"
+    dest new File(buildDir, "bx-esapi-${ESAPIModuleVersion}.zip")
+}
+
+/**
+ * TEMPORARY until we publish to maven
+ * Task to install the latest derby jar from https://ortus-temp.s3.amazonaws.com/boxlang-modules/bx-esapi/bx-esapi-1.0.0.zip
+ */
+task installESAPIModule(dependsOn: downloadESAPIModule, type: Copy) {
+	from zipTree(downloadESAPIModule.dest)
+	into "${testResourceDirectory}/modules/bx-esapi"
+}
+
+
 /**
  * Project Wide Helper function
  * This is not a task, but a reusable UDF
