@@ -4,16 +4,16 @@
 @BoxComponent 'Slider'
 @AllowsBody true
 @RequiresBody false
-class{
+class extends="Input"{
 
 
 
 
 	/**
-	 * The execution of this Component
+	 * Boxlang Component Which Generates the Slider Tag
 	 *
 	 * <pre>
-	 * <bx:holaComponent>This is my output</bx:holaComponent>
+	 * <cfslider name="foo" value="5" increment="1" min="1" max="10" bgColor="red" color="blue" vertical="true" />
 	 * </pre>
 	 *
 	 * @param context The context of the execution (IBoxContext)
@@ -24,19 +24,21 @@ class{
 	 * @return A BodyResult instance or null for a default result return.
 	 */
 	function invoke( required context, Struct attributes, any body, Struct executionState ){
-
-		// A buffer to capture the body output
-		StringBuffer	buffer		= newBuffer();
-		var	bodyResult	= processBody( context, body, buffer );
-
-		// If there was a return statement inside our body, we early exit now
-		if ( bodyResult.isEarlyExit() ) {
-			return bodyResult;
+		attributes.type = "range";
+		param attributes.style = "";
+		if( !isNull( attributes.increment ) ){
+			attributes[ "step" ] = attributes.increment;
 		}
-		// reverse the buffer contents and place into a string
-		var newContent	= buffer.reverse().toString();
-		// output it to the page buffer
-		context.writeToBuffer( content );
+		if( !isNull( attributes.bgColor ) ){
+			atributes.style &= " -webkit-appearance: none; border-radius: 1em; background: #attributes.bgColor#";
+		}
+		if( !isNull( attributes.color ) ){
+			atributes.style &= " accent-color: #attributes.color#";
+		}
+		if( !isNull( attributes.vertical ) && attributes.vertical ){
+			atributes.style &= " writing-mode: vertical-lr; direction: rtl; vertical-align: middle;";
+		}
+		return super.invoke( context, attributes, body, executionState );
 	}
 
 }

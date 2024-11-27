@@ -7,10 +7,10 @@
 class{
 
 	/**
-	 * The execution of this Component
+	 * Boxlang Component Which Generates the Textarea Tag
 	 *
 	 * <pre>
-	 * <bx:holaComponent>This is my output</bx:holaComponent>
+	 * <bx:textarea name="myTextarea">This is my text</bx:textarea>
 	 * </pre>
 	 *
 	 * @param context The context of the execution (IBoxContext)
@@ -38,7 +38,7 @@ class{
 		var isHTMLAttribute = ( key ) => !nonHTMLAttributes.contains( key ) && !conditionalAtrributes.contains( key ) && !evaluativeAttributes.contains( key ) && !unsupportedAttributes.contains( key ) && !promotedAttributes.contains( key );
 
 		// A buffer to capture the body output
-		StringBuffer	buffer		= newBuffer();
+		var buffer		= newBuffer();
 
 		if( !isNull( attributes.bind ) ){
 
@@ -54,8 +54,7 @@ class{
 		var tagBodyContent	= buffer.toString();
 
 		var tagContent = "<textarea";
-		var identifier = attributes.id ?: listLast( lcase( createUUID() ), "-" );
-		tagContent &= " id=""#identifier#""";
+		// param attributes.id = listLast( lcase( createUUID() ), "-" );
 
 		attributes.filter( ( key ) => isHTMLAttribute( key ) ).each( ( key, value ) => {
 			tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
@@ -91,7 +90,7 @@ class{
 		tagContent &= tagBodyContent;
 
 
-		tagContent &= " </textarea>";
+		tagContent &= "</textarea>";
 
 		if( !isNull( attributes.label ) ){
 			tagContent = "<label for=""#attributes.id#"">#attributes.label#</label>" & tagContent;

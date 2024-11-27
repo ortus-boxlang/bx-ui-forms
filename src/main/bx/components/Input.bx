@@ -71,8 +71,6 @@ class{
 		}
 
 		var tagContent = "<input";
-		var identifier = attributes.id ?: listLast( lcase( createUUID() ), "-" );
-		tagContent &= " id=""#identifier#""";
 
 		attributes.filter( ( key ) => isHTMLAttribute( key ) ).each( ( key, value ) => {
 			tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
@@ -117,8 +115,6 @@ class{
 		if( !isNull( attributes.label ) ){
 			tagContent = "<label for=""#attributes.id#"">#attributes.label#</label>" & tagContent;
 		}
-
-		println( "Tag Content: #tagContent#" );
 
 		context.writeToBuffer( tagContent );
 

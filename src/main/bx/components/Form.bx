@@ -32,6 +32,9 @@ class{
 		var nonHTMLAttributes = [ "format", "passthrough", "scriptsrc", "preservedata" ];
 		var unsupportedAttributes = [ "enablecab", "skin", "preloader", "timeout", "wmode", "accessible", "archive", "codebase" ];
 
+		// TODO: Should we add our own ID to the forms if not supplied and ajax functionality is enabled?
+		// param attributes.id = listLast( lcase( createUUID() ), "-" );
+
 		unsupportedAttributes.each( ( key ) => {
 			if( !isNull( attributes[ key ] ) ){
 				BoxAnnounce(

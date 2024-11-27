@@ -14,7 +14,7 @@ class{
 	 *
 	 * <pre>
 	 * <bx:select query="cities" group="state" value="abbreviation" display="name" queryposition="after">
-	 * <option value="">Select a City</option>
+	 *     <option value="">Select a City</option>
 	 * </bx:select>
 	 * </pre>
 	 *
@@ -42,7 +42,7 @@ class{
 		var isHTMLAttribute = ( key ) => !nonHTMLAttributes.contains( key ) && !conditionalAtrributes.contains( key ) && !evaluativeAttributes.contains( key ) && !promotedAttributes.contains( key );
 
 		// A buffer to capture the body output
-		StringBuffer	buffer		= newBuffer();
+		var buffer		= newBuffer();
 		var	bodyResult	= processBody( context, body, buffer );
 
 		// If there was a return statement inside our body, we early exit now
@@ -54,8 +54,6 @@ class{
 		var tagBodyContent	= buffer.toString();
 
 		var tagContent = "<select";
-		var identifier = attributes.id ?: listLast( lcase( createUUID() ), "-" );
-		tagContent &= " id=""#identifier#""";
 
 		attributes.filter( ( key ) => isHTMLAttribute( key ) ).each( ( key, value ) => {
 			tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
@@ -93,8 +91,15 @@ class{
 				tagContent &= tagBodyContent;
 			}
 			var optionsQuery = isSimplevalue( attributes.query )
-				? interpreter.getVariable( context, attributes.query, false )
+				? interpreter.getVariable( context, attributes.query, true )
 				: attributes.query;
+
+			if( !isQuery( optionsQuery ) ){
+				throw(
+					type		= "boxlang.forms.InvalidQueryException",
+					message		= "The query attribute must be a query object or the name of a query in the current context"
+				);
+			}
 
 			// Grouping directive
 			if( !isNull( attributes.group ) ){
@@ -106,7 +111,7 @@ class{
 				}
 				var optionGroups = optionsQuery.reduce( ( result, row ) => {
 					var rowGroup = row[ attributes.group ];
-					if( !row.keyExists( rowGroup) ){
+					if( !result.keyExists( rowGroup) ){
 						result[ rowGroup ] = [];
 					}
 					var optionValue = row[ attributes.value ];
@@ -122,21 +127,22 @@ class{
 
 				}, {} );
 
+
 				for( var group in optionGroups ){
-					tagContent &= "<optgroup label=""#group#"">";
+					tagContent &= char( 13 ) & "<optgroup label=""#group#"">";
 					optionGroups[ group ].each( ( option ) => {
-						tagContent &= "<option value=""#option.value#"" #( option.selected ? "selected" : "" )#>#option.label#</option>";
+						tagContent &= char( 13 ) & "<option value=""#option.value#"" #( option.selected ? "selected" : "" )#>#option.label#</option>";
 					} );
-					tagContent &= "</optgroup>";
+					tagContent &= char( 13 ) & "</optgroup>";
 				}
 
 			} else {
-				var firstColumnName = optionsQuery.columnList().first();
-				attributes.query.each( ( row ) => {
+				var firstColumnName = optionsQuery.getColumnArray().first();
+				optionsQuery.each( ( row ) => {
 					var optionValue = !isNull( attributes.value ) ? row[ attributes.value ] : row[ firstColumnName ];
 					var optionDisplay = !isNull( attributes.display ) ? row[ attributes.display ] : optionValue;
 					var selected = !isNull( attributes.selected ) ? ( optionValue == attributes.selected ) : false;
-					tagContent &= "<option value=""#optionValue#"" #( row.selected ? "selected" : "" )#>#optionDisplay#</option>";
+					tagContent &=  char( 13 ) & "<option value=""#optionValue#"" #( selected ? "selected" : "" )#>#optionDisplay#</option>";
 				} );
 			}
 
