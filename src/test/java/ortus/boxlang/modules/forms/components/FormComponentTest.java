@@ -36,9 +36,6 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		);
 		// @formatter:on
 		String output = variables.getAsString( result );
-		System.out.println( "------------------------------------" );
-		System.out.println( output );
-		System.out.println( "------------------------------------" );
 		assertTrue( output.contains( "<form" ) );
 		assertTrue( output.contains( "</form>" ) );
 		assertTrue( output.contains( "action=\"index.cfm\" method=\"post\"" ) );
@@ -47,34 +44,35 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		assertTrue( output.contains( "<textarea name=\"textarea\">Blah</textarea>" ) );
 	}
 
-	// @DisplayName( "It can test the FormComponent with basic inputs in BL components" )
-	// @Test
-	// public void testFormComponentInBL() {
-	// 	// @formatter:off
-	// 	runtime.executeSource( """
-	// 	<bx:form action="index.cfm" method="post">
-	// 		<bx:input type="text" name="name" />
-	// 		<bx:input name="submit" type="submit" value="Submit" />
-	// 	</bx:form>
-	// 	<bx:set result = getBoxContext().getBuffer().toString()/ >
-	// 	""",
-	// 	context,
-	// 	BoxSourceType.BOXTEMPLATE
-	// 	);
-	// 	// @formatter:on
-
-	// String output = variables.getAsString( result );
-	// System.out.println( "------------------------------------" );
-	// System.out.println( output );
-	// System.out.println( "------------------------------------" );
-	// System.out.println( "action=\"index.cfm\" method=\"post\"" );
-	// assertTrue( output.contains( "<form" ) );
-	// assertTrue( output.contains( "</form>" ) );
-	// assertTrue( output.contains( "action=\"index.cfm\" method=\"post\"" ) );
-	// assertTrue( output.contains( "type=\"text\" name=\"name\"" ) );
-	// assertTrue( output.contains( "type=\"text\" name=\"name\"" ) );
-	// }
-
+	@DisplayName( "It can test the FormComponent with basic inputs in BL components" )
+	@Test
+	public void testFormComponentInBL() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="name" />
+			<bx:select name="select" id="mySelect">
+				<option value="1">One</option>
+				<option value="2">Two</option>
+			</bx:select>
+			<bx:textarea name="textarea">Blah</bx:textarea>
+			<bx:slider name="slider" min="0" max="10" />
+			<bx:input name="submit" type="submit" value="Submit" />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "<form" ) );
+		assertTrue( output.contains( "</form>" ) );
+		assertTrue( output.contains( "action=\"index.cfm\" method=\"post\"" ) );
+		assertTrue( output.contains( "type=\"text\" name=\"name\"" ) );
+		assertTrue( output.contains( "type=\"text\" name=\"name\"" ) );
+		assertTrue( output.contains( "<textarea name=\"textarea\">Blah</textarea>" ) );
+	}
 
 	@DisplayName( "It can test the Select component with a query binding" )
 	@Test
@@ -99,15 +97,11 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		);
 		// @formatter:on
 		String output = variables.getAsString( result );
-		System.out.println( "------------------------------------" );
-		System.out.println( output );
-		System.out.println( "------------------------------------" );
 		assertTrue( output.contains( "<form" ) );
 		assertTrue( output.contains( "</form>" ) );
 		assertTrue( output.contains( "action=\"index.cfm\" method=\"post\"" ) );
 		assertTrue( output.contains( "<option value=\"MI\" selected>Michigan</option>" ) );
 	}
-
 
 	@DisplayName( "It can test the Select component with a grouped binding" )
 	@Test
@@ -133,9 +127,6 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		);
 		// @formatter:on
 		String output = variables.getAsString( result );
-		System.out.println( "------------------------------------" );
-		System.out.println( output );
-		System.out.println( "------------------------------------" );
 		assertTrue( output.contains( "<form" ) );
 		assertTrue( output.contains( "</form>" ) );
 		assertTrue( output.contains( "action=\"index.cfm\" method=\"post\"" ) );
