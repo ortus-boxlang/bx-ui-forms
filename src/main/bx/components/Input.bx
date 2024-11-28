@@ -39,7 +39,7 @@ class{
 		var nonHTMLAttributes = [ "sourcefortooltip", "validateat", "range", "validate", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
 		var unsupportedAttributes = [ "bind" ];
 		var conditionalAtrributes = [ "checked", "disabled", "autofocus" ];
-		var evaluativeAttributes = [ "label", "message"];
+		var evaluativeAttributes = [ "label", "message", "passthrough" ];
 
 		// TODO: For now disable all ajax attributes until we implement them in the JS
 		if( AJAXAttributes.some( ( key ) => !isNull( attributes[ key ] )  ) ){
@@ -77,7 +77,18 @@ class{
 		} );
 
 		if( !isNull( attributes.passthrough ) ){
-			tagContent &= " #attributes.passthrough#";
+			if( isStruct( attributes.passthrough ) ){
+				attributes.passthrough.each( ( key, value ) => {
+					tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+				} );
+			} else if( isArray ( attributes.passthrough ) ){
+				attributes.passthrough.each( ( key, value ) => {
+					tagContent &= " #value#";
+				} );
+			}
+			else{
+				tagContent &= " #attributes.passthrough#";
+			}
 		}
 
 		conditionalAtrributes.each( ( key ) => {

@@ -31,7 +31,7 @@ class{
 
 		var nonHTMLAttributes = [ "sourcefortooltip", "validateat", "range", "validate", "bind", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
 		var conditionalAtrributes = [ "disabled", "autofocus" ];
-		var evaluativeAttributes = [ "label", "message"];
+		var evaluativeAttributes = [ "label", "message", "passthrough" ];
 		var unsupportedAttributes = [ "stylesXML", "templatesXML", "richtext", "toolbar", "toolbarOnFocus" ];
 		var promotedAttributes = [ "datasrc", "dataformatas", "dir", "lang" ]
 
@@ -61,7 +61,18 @@ class{
 		} );
 
 		if( !isNull( attributes.passthrough ) ){
-			tagContent &= " #attributes.passthrough#";
+			if( isStruct( attributes.passthrough ) ){
+				attributes.passthrough.each( ( key, value ) => {
+					tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+				} );
+			} else if( isArray ( attributes.passthrough ) ){
+				attributes.passthrough.each( ( key, value ) => {
+					tagContent &= " #value#";
+				} );
+			}
+			else{
+				tagContent &= " #attributes.passthrough#";
+			}
 		}
 
 		if( !isNull( attributes.enabled ) && !attributes.enabled ){

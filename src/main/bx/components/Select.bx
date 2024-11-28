@@ -34,9 +34,9 @@ class{
 			);
 		}
 
-		var nonHTMLAttributes = [ "casesenstive", "query", "passthrough", "group", "queryposition", "tooltip", "visible", "editable" ];
+		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable" ];
 		var conditionalAtrributes = [ "disabled", "autofocus", "ondblclick" ];
-		var evaluativeAttributes = [ "label", "selected", "enabled" ];
+		var evaluativeAttributes = [ "label", "selected", "enabled", "passthrough" ];
 		var promotedAttributes = [ "datasrc", "dataformatas", "dir", "lang" ]
 
 		var isHTMLAttribute = ( key ) => !nonHTMLAttributes.contains( key ) && !conditionalAtrributes.contains( key ) && !evaluativeAttributes.contains( key ) && !promotedAttributes.contains( key );
@@ -60,7 +60,18 @@ class{
 		} );
 
 		if( !isNull( attributes.passthrough ) ){
-			tagContent &= " #attributes.passthrough#";
+			if( isStruct( attributes.passthrough ) ){
+				attributes.passthrough.each( ( key, value ) => {
+					tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+				} );
+			} else if( isArray ( attributes.passthrough ) ){
+				attributes.passthrough.each( ( key, value ) => {
+					tagContent &= " #value#";
+				} );
+			}
+			else{
+				tagContent &= " #attributes.passthrough#";
+			}
 		}
 
 		if( !isNull( attributes.enabled ) && !attributes.enabled ){
