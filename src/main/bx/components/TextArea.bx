@@ -29,7 +29,7 @@ class{
 			);
 		}
 
-		var nonHTMLAttributes = [ "sourcefortooltip", "validateat", "range", "validate", "bind", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
+		var nonHTMLAttributes = [ "sourcefortooltip", "validateat", "range", "validate", "bind", "bindattribute", "bindonload", "onvalidate" ];
 		var conditionalAtrributes = [ "disabled", "autofocus" ];
 		var evaluativeAttributes = [ "label", "message", "passthrough" ];
 		var unsupportedAttributes = [ "stylesXML", "templatesXML", "richtext", "toolbar", "toolbarOnFocus" ];
