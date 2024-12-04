@@ -31,13 +31,18 @@ class{
 			);
 		}
 
+		// HTML5 validation type
+		if( !isNull( attributes.validate ) && variables.acceptedTypes.contains( attributes.validate ) ){
+
+		}
+
 		if( isNull( attributes.type ) ){
 			attributes.type = "text";
 		}
 
-		var AJAXAttributes = [ "autosuggest", "autosuggestbinddelay", "autosuggestminlength", "delimiter", "maxresultsdisplayed", "onbinderror", "showautosuggestloadingicon", "typeahead", "autocomplete" ];
-		var nonHTMLAttributes = [ "sourcefortooltip", "validateat", "range", "validate", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
-		var unsupportedAttributes = [ "bind" ];
+		var AJAXAttributes = [ "autosuggest", "autosuggestbinddelay", "autosuggestminlength", "delimiter", "maxresultsdisplayed", "onbinderror", "showautosuggestloadingicon", "typeahead", "autocomplete", "sourcefortooltip" ];
+		var nonHTMLAttributes = [ "range", "validate", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
+		var unsupportedAttributes = [ "bind", "validateAt" ];
 		var conditionalAtrributes = [ "checked", "disabled", "autofocus" ];
 		var evaluativeAttributes = [ "label", "message", "passthrough" ];
 
@@ -49,7 +54,6 @@ class{
 				message		= "The AJAX attributes #foundUnsupported.toList()# are not yet supported by the forms Input component"
 			);
 		}
-
 		var isHTMLAttribute = ( key ) => !AJAXAttributes.contains( key ) && !nonHTMLAttributes.contains( key ) && !unsupportedAttributes.contains( key ) && !conditionalAtrributes.contains( key ) && !evaluativeAttributes.contains( key );
 
 		var promotedAttributes = attributes.filter( ( key, value ) => lcase( left( key, 4 ) ) == "form" );
@@ -91,6 +95,7 @@ class{
 			}
 		}
 
+
 		conditionalAtrributes.each( ( key ) => {
 			if( !isNull( attributes[ key ] ) && attributes[ key ] ){
 				tagContent &= " #key#";
@@ -111,9 +116,7 @@ class{
 		// TODO: Add handling for the autosuggest functionality
 		if( !isNull( attributes.autosuggest ) ){}
 
-		if( !isNull( attributes.sourcefortooltip ) ){
-			tagContext &= " tooltip data-tooltip-source=""#encodeForHTMLAttribute( attributes.sourcefortooltip )#""";
-		} else if( !isNull( attributes.title ) ){
+		if( !isNull( attributes.title ) ){
 			tagContext &= " tooltip";
 		}
 

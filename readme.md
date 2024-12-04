@@ -14,7 +14,7 @@ The majority of attributes to these components serve as pass-through attributes 
 
 ### `form`
 
-* `format` - this attribute will throw an error if present and is anything other than `HTML`.  XML and Flash forms are not supported.
+* `format` - this attribute will throw an error if present and is anything other than `HTML`.  XML and Flash forms will not be supported.
 * `passthrough` - this is a list of passthrough attributes which will be added to the form tag.  
 * `scriptsrc` - this defines an external location for the custom forms javascript file, which is sourced into the HTML output
 * `preservedata` - When the form action  posts back to the page that contains the form, this attribute determines whether to override the control values with the submitted values.
@@ -52,10 +52,12 @@ The following have not yet been implemented in the `input` component but are pla
 * `onbinderror` - The name of a JavaScript function to execute if evaluating a bind expression, including an autosuggest bind expression, results in an error. The function must take two attributes: an HTTP status code and a message.
 * `showautosuggestloadingicon` - A Boolean value that specifies whether to display an animated icon when loading an autosuggest value for a text input.
 * `typeahead` - A Boolean value that specifies whether the autosuggest feature should automatically complete a user's entry with the first result in the suggestion list.
+* `validate` - A limited subset of the accepted values for `validate` will be supported in a future release.  It is highly encouraged to use HTML 5 validation, including `min`, `max` and `mask` attributes, however.
 
 #### Unsupported `input` Component Attributes
 
 * `bind` - this attribute is unsupported and will throw an error if used
+* `validateAt` - Since the `validate` attribute passes through to an HTML5 `type` attribute on the tag, this attribute is not supported
 
 ### `slider`
 
