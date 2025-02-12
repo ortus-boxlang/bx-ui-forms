@@ -1,9 +1,9 @@
 /**
  * Boxlang Component Which Generates the Form Tag
  */
-@BoxComponent 'Form'
-@AllowsBody true
-@RequiresBody false
+@BoxComponent( 'Form' )
+@AllowsBody( true )
+@RequiresBody( false )
 class{
 
 	/**
