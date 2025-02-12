@@ -4,9 +4,9 @@
 
  import java:ortus.boxlang.runtime.dynamic.ExpressionInterpreter as interpreter;
 
-@BoxComponent 'Select'
-@AllowsBody true
-@RequiresBody false
+@BoxComponent( Select )
+@AllowsBody( true )
+@RequiresBody( false )
 class{
 
 	/**
