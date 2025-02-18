@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed 
+### Added
+
+- Updated build scripts and gradle plugins
+
+### Changed
 
 - Removed LoggerFactory usage
 
