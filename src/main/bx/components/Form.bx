@@ -1,3 +1,5 @@
+import java:ortus.boxlang.runtime.scopes.Key as KeyClass;
+
 /**
  * Boxlang Component Which Generates the Form Tag
  */
@@ -21,6 +23,14 @@ class{
 	 * @return A BodyResult instance or null for a default result return.
 	 */
 	function invoke( required context, Struct attributes, any body, Struct executionState ){
+       // Spoof being in the output component in case the app has enableoutputonly=true
+		context.pushComponent(
+		    {
+		        "name" : KeyClass.output,
+		        "class" : null,
+		        "attributes" : {}
+		    }
+		);
 		var requestContext = context.getRequestContext();
 		if( !isNull( atrributes.format ) && lcase( attributes.format ) != "html" ){
 			throw(
