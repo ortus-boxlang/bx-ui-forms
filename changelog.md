@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-04-30
+
 ### Fixed
 
 - Remove incorrect mapping that was causing lookup/compile conflict
@@ -27,8 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First iteration of this module
 
-[Unreleased]: https://github.com/ortus-boxlang/bx-ui-forms/compare/v1.1.0...HEAD
-
+[unreleased]: https://github.com/ortus-boxlang/bx-ui-forms/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ortus-boxlang/bx-ui-forms/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ortus-boxlang/bx-ui-forms/compare/v1.0.0...v1.1.0
-
 [1.0.0]: https://github.com/ortus-boxlang/bx-ui-forms/compare/4826defe119f767771053e2896f18c0b825d6de7...v1.0.0
