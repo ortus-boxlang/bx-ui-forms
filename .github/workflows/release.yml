@@ -65,6 +65,11 @@ jobs:
         run: |
           # Read Version from gradle.properties
           TMPVERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+          # Replace existing prerelease identifier with -snapshot or append -snapshot if none exists
+          # If we are on the development branch, we always append -snapshot
+          if [[ "${{ github.ref }}" == "refs/heads/development" ]]; then
+            TMPVERSION=$(echo $TMPVERSION | sed 's/-.*$//')-snapshot
+          fi
           # Set the version in the environment
           echo "VERSION=$TMPVERSION" >> $GITHUB_ENV
 
@@ -79,7 +84,7 @@ jobs:
           fi
 
       - name: Update changelog [unreleased] with latest version
-        uses: thomaseizinger/keep-a-changelog-new-release@2.0.0
+        uses: thomaseizinger/keep-a-changelog-new-release@3.1.0
         if: env.SNAPSHOT == 'false'
         with:
           changelogPath: ./changelog.md
@@ -147,7 +152,7 @@ jobs:
           cd $GITHUB_WORKSPACE
 
       - name: Create Github Release
-        uses: taiki-e/create-gh-release-action@v1.8.0
+        uses: taiki-e/create-gh-release-action@v1.9.1
         continue-on-error: true
         if: env.SNAPSHOT == 'false'
         id: create_release
@@ -205,7 +210,7 @@ jobs:
 
       - name: Bump Version
         run: |
-          gradle bumpMinorVersion --stacktrace --console=plain
+          gradle bumpPatchVersion --stacktrace --console=plain
           git pull
 
       - name: Commit Version Bump

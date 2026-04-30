@@ -3,6 +3,7 @@
  */
 
  import java:ortus.boxlang.runtime.dynamic.ExpressionInterpreter as interpreter;
+ import java:ortus.boxlang.runtime.scopes.Key as KeyClass;
 
 @BoxComponent( Select )
 @AllowsBody( true )
@@ -33,6 +34,15 @@ class{
 				message		= "The name attribute is required for the Input component"
 			);
 		}
+
+       // Spoof being in the output component in case the app has enableoutputonly=true
+		context.pushComponent(
+		    {
+		        "name" : KeyClass.output,
+		        "class" : null,
+		        "attributes" : {}
+		    }
+		);
 
 		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable" ];
 		var conditionalAtrributes = [ "disabled", "autofocus", "ondblclick" ];
