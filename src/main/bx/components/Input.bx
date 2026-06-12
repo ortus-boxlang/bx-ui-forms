@@ -7,6 +7,7 @@
 class{
 
 	variables.formComponentName = "Form";
+	variables.acceptedTypes = [ "date", "time", "float", "integer", "telephone", "zipcode", "creditcard", "social_security_number", "regular_expression" ];
 
 	/**
 	 * The Input Form Component
@@ -31,9 +32,10 @@ class{
 			);
 		}
 
-		// HTML5 validation type
-		if( !isNull( attributes.validate ) && variables.acceptedTypes.contains( attributes.validate ) ){
-
+		// HTML5 validation type - resolve dateformat for date validation
+		var resolvedDateFormat = "mm/dd/yyyy";
+		if( !isNull( attributes.validate ) && attributes.validate == "date" && !isNull( attributes.dateformat ) ){
+			resolvedDateFormat = attributes.dateformat;
 		}
 
 		if( isNull( attributes.type ) ){
@@ -41,7 +43,7 @@ class{
 		}
 
 		var AJAXAttributes = [ "autosuggest", "autosuggestbinddelay", "autosuggestminlength", "delimiter", "maxresultsdisplayed", "onbinderror", "showautosuggestloadingicon", "typeahead", "autocomplete", "sourcefortooltip" ];
-		var nonHTMLAttributes = [ "range", "validate", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
+		var nonHTMLAttributes = [ "range", "validate", "dateformat", "pattern", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
 		var unsupportedAttributes = [ "bind", "validateAt" ];
 		var conditionalAtrributes = [ "checked", "disabled", "autofocus" ];
 		var evaluativeAttributes = [ "label", "message", "passthrough" ];
@@ -122,6 +124,17 @@ class{
 
 		if( !isNull( attributes.message ) ){
 			tagContent &= " data-validation-message=""#encodeForHTMLAttribute( attributes.message )#""";
+		}
+
+		if( !isNull( attributes.pattern ) ){
+			tagContent &= " pattern=""#encodeForHTMLAttribute( attributes.pattern )#""";
+		}
+
+		if( !isNull( attributes.validate ) && variables.acceptedTypes.contains( attributes.validate ) ){
+			tagContent &= " data-validate=""#encodeForHTMLAttribute( attributes.validate )#""";
+			if( attributes.validate == "date" ){
+				tagContent &= " data-dateformat=""#resolvedDateFormat#""";
+			}
 		}
 
 		tagContent &= " />";

@@ -52,7 +52,20 @@ The following have not yet been implemented in the `input` component but are pla
 * `onbinderror` - The name of a JavaScript function to execute if evaluating a bind expression, including an autosuggest bind expression, results in an error. The function must take two attributes: an HTTP status code and a message.
 * `showautosuggestloadingicon` - A Boolean value that specifies whether to display an animated icon when loading an autosuggest value for a text input.
 * `typeahead` - A Boolean value that specifies whether the autosuggest feature should automatically complete a user's entry with the first result in the suggestion list.
-* `validate` - A limited subset of the accepted values for `validate` will be supported in a future release.  It is highly encouraged to use HTML 5 validation, including `min`, `max` and `mask` attributes, however.
+* `validate` - Supported validation types include: `date`, `time`, `float`, `integer`, `telephone`, `zipcode`, `creditcard`, `social_security_number`, and `regular_expression`.
+
+## JavaScript Tests
+
+This module uses Vitest with a JSDOM environment for automated JavaScript validation tests.
+
+### Run locally
+
+* `npm ci`
+* `npm test`
+* `npm run test:watch`
+* `npm run test:coverage`
+
+Coverage output is written to `build/reports/js-coverage`.
 
 #### Unsupported `input` Component Attributes
 

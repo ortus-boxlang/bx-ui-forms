@@ -78,10 +78,11 @@ class{
 			}
 		}
 
-		// TODO: Handle only bringing in the script and css once via a request variable
-		if( !isNull( attributes.scriptsrc ) ){
-			context.writeToBuffer( "<script type=""application/javascript"" src=""#attributes.scriptsrc#""></script>" );
-		}
+		// Default to the module's public script if not provided
+		var scriptSrc = !isNull( attributes.scriptsrc ) 
+			? attributes.scriptsrc 
+			: "/bxmodules/ui-forms/public/index.bxm?target=/js/bx-forms.js";
+		context.writeToBuffer( "<script type=""application/javascript"" src=""#scriptSrc#""></script>" );
 
 		context.writeToBuffer( tagContent & ">" );
 
