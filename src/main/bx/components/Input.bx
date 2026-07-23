@@ -122,7 +122,7 @@ class{
 		if( !isNull( attributes.autosuggest ) ){}
 
 		if( !isNull( attributes.title ) ){
-			tagContext &= " tooltip";
+			tagContent &= " tooltip";
 		}
 
 		if( !isNull( attributes.message ) ){
