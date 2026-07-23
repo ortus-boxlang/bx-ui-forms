@@ -99,7 +99,10 @@ class{
 
 
 		conditionalAtrributes.each( ( key ) => {
-			if( !isNull( attributes[ key ] ) && attributes[ key ] ){
+			//  Needs to be either an empty string or a truthy value
+			// <cfinput disabled="true" >
+			// or <cfinput disabled >
+			if( !isNull( attributes[ key ] ) && ( attributes[ key ] == "" || attributes[ key ] ) ){
 				tagContent &= " #key#";
 			}
 		} );
