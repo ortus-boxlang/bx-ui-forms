@@ -96,9 +96,9 @@ class{
 
 
 		if( !isNull( attributes.sourcefortooltip ) ){
-			tagContext &= " tooltip data-tooltip-source=""#encodeForHTMLAttribute( attributes.sourcefortooltip )#""";
+			tagContent &= " tooltip data-tooltip-source=""#encodeForHTMLAttribute( attributes.sourcefortooltip )#""";
 		} else if( !isNull( attributes.title ) ){
-			tagContext &= " tooltip";
+			tagContent &= " tooltip";
 		}
 
 		if( !isNull( attributes.message ) ){
