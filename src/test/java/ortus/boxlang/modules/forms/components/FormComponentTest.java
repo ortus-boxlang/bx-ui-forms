@@ -166,4 +166,239 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		assertTrue( output.contains( "<option value=\"MI\" selected>Michigan</option>" ) );
 	}
 
+	@DisplayName( "It can test the Input component with date validation using default format" )
+	@Test
+	public void testInputComponentDateValidationDefault() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input 
+				type="text" 
+				name="transDate" 
+				id="transDate" 
+				validate="date" 
+				message="Invalid Date mm/dd/yyyy." 
+			/>
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"date\"" ), "Should contain data-validate attribute" );
+		assertTrue( output.contains( "data-dateformat=\"mm/dd/yyyy\"" ), "Should contain default dateformat" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with date validation using custom format" )
+	@Test
+	public void testInputComponentDateValidationCustomFormat() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input 
+				type="text" 
+				name="transDate" 
+				id="transDate" 
+				validate="date" 
+				dateformat="yyyy-mm-dd"
+				message="Invalid Date yyyy-mm-dd." 
+			/>
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"date\"" ), "Should contain data-validate attribute" );
+		assertTrue( output.contains( "data-dateformat=\"yyyy-mm-dd\"" ), "Should contain custom dateformat" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with date validation with label" )
+	@Test
+	public void testInputComponentDateValidationWithLabel() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input 
+				type="text" 
+				name="transDate" 
+				id="transDate" 
+				label="Transaction Date"
+				validate="date" 
+				message="Invalid Date mm/dd/yyyy." 
+				required="true"
+			/>
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "<label for=\"transDate\">Transaction Date</label>" ), "Should contain label element" );
+		assertTrue( output.contains( "data-validate=\"date\"" ), "Should contain data-validate attribute" );
+		assertTrue( output.contains( "data-dateformat=\"mm/dd/yyyy\"" ), "Should contain default dateformat" );
+		assertTrue( output.contains( "required" ), "Should contain required attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with time validation" )
+	@Test
+	public void testInputComponentTimeValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="apptTime" validate="time" message="Invalid time format." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"time\"" ), "Should contain data-validate=time" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with float validation" )
+	@Test
+	public void testInputComponentFloatValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="price" validate="float" message="Please enter a valid number." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"float\"" ), "Should contain data-validate=float" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with integer validation" )
+	@Test
+	public void testInputComponentIntegerValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="qty" validate="integer" message="Please enter a whole number." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"integer\"" ), "Should contain data-validate=integer" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with telephone validation" )
+	@Test
+	public void testInputComponentTelephoneValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="phone" validate="telephone" message="Invalid phone number." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"telephone\"" ), "Should contain data-validate=telephone" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with zipcode validation" )
+	@Test
+	public void testInputComponentZipcodeValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="zip" validate="zipcode" message="Invalid zip code." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"zipcode\"" ), "Should contain data-validate=zipcode" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with creditcard validation" )
+	@Test
+	public void testInputComponentCreditCardValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="ccNum" validate="creditcard" message="Invalid credit card number." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"creditcard\"" ), "Should contain data-validate=creditcard" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with social_security_number validation" )
+	@Test
+	public void testInputComponentSSNValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="ssn" validate="social_security_number" message="Invalid SSN." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"social_security_number\"" ), "Should contain data-validate=social_security_number" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
+	@DisplayName( "It can test the Input component with regular_expression validation" )
+	@Test
+	public void testInputComponentRegexValidation() {
+		// @formatter:off
+		runtime.executeSource( """
+		<bx:form action="index.cfm" method="post">
+			<bx:input type="text" name="code" validate="regular_expression" pattern="[A-Z]{3}-[0-9]{4}" message="Invalid format." />
+		</bx:form>
+		<bx:set result = getBoxContext().getBuffer().toString()>
+		""",
+		context,
+		BoxSourceType.BOXTEMPLATE
+		);
+		// @formatter:on
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "data-validate=\"regular_expression\"" ), "Should contain data-validate=regular_expression" );
+		assertTrue( output.contains( "pattern=" ), "Should contain native pattern attribute" );
+		assertTrue( output.contains( "data-validation-message=" ), "Should contain validation message attribute" );
+	}
+
 }

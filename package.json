@@ -1,0 +1,16 @@
+{
+	"name": "bx-ui-forms-js-tests",
+	"private": true,
+	"description": "JavaScript unit tests for bx-ui-forms module scripts",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"test:json": "vitest run --reporter=json --outputFile=build/test-results/js/vitest-results.json"
+	},
+	"devDependencies": {
+		"vitest": "^3.1.0",
+		"jsdom": "^26.0.0",
+		"@vitest/coverage-istanbul": "^3.1.0"
+	}
+}

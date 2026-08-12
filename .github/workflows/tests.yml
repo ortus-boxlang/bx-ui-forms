@@ -48,6 +48,12 @@ jobs:
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
       # - name: Setup Database and Fixtures
       #   run: |
       #     sudo systemctl start mysql.service
@@ -74,6 +80,7 @@ jobs:
 
       - name: Test Module
         run: |
+          npm ci
           gradle downloadBoxLang
           gradle installESAPIModule
           # this is done in order to build the module structure before testing

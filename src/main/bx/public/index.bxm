@@ -1,0 +1,90 @@
+<bx:script>
+	// This component serves static assets
+	publicPath = getDirectoryFromPath( getCurrentTemplatePath() );
+
+	function deliver(){
+		param name="url.target" default="";
+
+		// Decode the target to ensure our traversal checks are accurate - double decode to handle cases where the URL is double-encoded to hide unicode characters or traversal sequences
+		var targetFile = urlDecode( urlDecode( url.target ) );
+
+		// If the target is empty do a 404
+		if( len( trim( targetFile ) ) EQ 0 ){
+			bx:header statusCode="404";
+			return;
+		}
+
+		// if the target contains "..", it's a potential path traversal attack, so we return a 404
+		if( find( url.target, ".." ) ){
+			bx:header statusCode="404";
+			return;
+		}
+
+		// Check if the target exists in the lib folder
+		var filePath = publicPath & targetFile;
+		if( NOT fileExists( filePath ) ){
+			bx:header statusCode="404";
+			return;
+		}
+
+		// Determine the content type
+		var contentType = "application/octet-stream";
+		switch( listLast( targetFile, "." ) ){
+			case "js":
+				contentType = "application/javascript";
+				break;
+			case "css":
+				contentType = "text/css";
+				break;
+			case "png":
+				contentType = "image/png";
+				break;
+			case "jpg":
+			case "jpeg":
+				contentType = "image/jpeg";
+				break;
+			case "gif":
+				contentType = "image/gif";
+				break;
+			case "svg":
+				contentType = "image/svg+xml";
+				break;
+			case "woff":
+				contentType = "font/woff";
+				break;
+			case "woff2":
+				contentType = "font/woff2";
+				break;
+			case "ttf":
+				contentType = "font/ttf";
+				break;
+			case "eot":
+				contentType = "application/vnd.ms-fontobject";
+				break;
+			case "otf":
+				contentType = "font/otf";
+				break;
+			case "json":
+				contentType = "application/json";
+				break;
+			case "xml":
+				contentType = "application/xml";
+				break;
+			default:
+				// Any other extensions are not servable
+				bx:header statusCode="404";
+				return;
+		}
+
+		// Set the content type
+		bx:header name="Content-Type" value="#contentType#";
+		// Disable caching for immediate updates during development
+		bx:header name="Cache-Control" value="no-cache, no-store, must-revalidate";
+		bx:header name="Pragma" value="no-cache";
+		bx:header name="Expires" value="0";
+		// Output the file
+		bx:content file="#filePath#" type="#contentType#" reset="true";
+		return;
+	}
+	deliver()
+</bx:script>

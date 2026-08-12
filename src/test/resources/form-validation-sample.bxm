@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Form Validation Sample - bx-ui-forms</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+			background-color: #f5f5f5;
+		}
+		.container {
+			max-width: 600px;
+			margin: 0 auto;
+			background-color: white;
+			padding: 30px;
+			border-radius: 8px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+		h1 {
+			color: #333;
+			text-align: center;
+		}
+		.form-group {
+			margin-bottom: 20px;
+		}
+		label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+			color: #333;
+		}
+		input[type="text"],
+		input[type="email"],
+		textarea {
+			width: 100%;
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 14px;
+			box-sizing: border-box;
+		}
+		input.bx-forms-error {
+			border-color: #dc3545;
+			background-color: #fff5f5;
+		}
+		.bx-forms-error-message {
+			color: #dc3545;
+			font-size: 12px;
+			margin-top: 5px;
+			display: block;
+		}
+		input[aria-invalid="true"] {
+			border-color: #dc3545;
+		}
+		input[aria-invalid="false"] {
+			border-color: #28a745;
+		}
+		button {
+			background-color: #007bff;
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+			width: 100%;
+		}
+		button:hover {
+			background-color: #0056b3;
+		}
+		.success-message {
+			background-color: #d4edda;
+			color: #155724;
+			padding: 12px;
+			border-radius: 4px;
+			margin-bottom: 20px;
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>bx-ui-forms Validation Sample</h1>
+		<p style="text-align: center; color: #666;">All fields are pre-populated with valid values. Try editing them to see validation in action.</p>
+		
+		<bx:form action="form-validation-sample.bxm" method="post">
+			<!-- Date Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="transactionDate" 
+					id="transactionDate"
+					label="Transaction Date (mm/dd/yyyy)"
+					validate="date"
+					value="06/12/2026"
+					message="Please enter a valid date in mm/dd/yyyy format"
+					required="true"
+				/>
+			</div>
+
+			<!-- Custom Date Format -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="reportDate" 
+					id="reportDate"
+					label="Report Date (yyyy-mm-dd)"
+					validate="date"
+					dateformat="yyyy-mm-dd"
+					value="2026-06-12"
+					message="Please enter a valid date in yyyy-mm-dd format"
+					required="true"
+				/>
+			</div>
+
+			<!-- Time Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="appointmentTime" 
+					id="appointmentTime"
+					label="Appointment Time (hh:mm:ss)"
+					validate="time"
+					value="14:30:00"
+					message="Please enter a valid time in hh:mm:ss format"
+					required="true"
+				/>
+			</div>
+
+			<!-- Float Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="price" 
+					id="price"
+					label="Product Price"
+					validate="float"
+					value="99.99"
+					message="Please enter a valid decimal number"
+					required="true"
+				/>
+			</div>
+
+			<!-- Integer Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="quantity" 
+					id="quantity"
+					label="Quantity"
+					validate="integer"
+					value="42"
+					message="Please enter a whole number"
+					required="true"
+				/>
+			</div>
+
+			<!-- Telephone Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="phoneNumber" 
+					id="phoneNumber"
+				label="Phone Number (##########-##########-############ or with blanks)"
+					validate="telephone"
+					value="555 555 5555"
+					message="Please enter a valid phone number (area code and exchange must start with 1-9)"
+					required="true"
+				/>
+			</div>
+
+			<!-- Zipcode Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="zipcode" 
+					id="zipcode"
+					label="ZIP Code (########## or ##########-############ or with blanks)"
+					validate="zipcode"
+					value="12345 6789"
+					message="Please enter a valid ZIP code (5 or 9 digits)"
+					required="true"
+				/>
+			</div>
+
+			<!-- Credit Card Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="creditCardNumber" 
+					id="creditCardNumber"
+					label="Credit Card Number"
+					validate="creditcard"
+					value="4111111111111111"
+					message="Please enter a valid credit card number"
+					required="true"
+				/>
+			</div>
+
+			<!-- Social Security Number Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="ssn" 
+					id="ssn"
+					label="Social Security Number (##########-##########-############ or with blanks)"
+					validate="social_security_number"
+					value="123 45 6789"
+					message="Please enter a valid SSN"
+					required="true"
+				/>
+			</div>
+
+			<!-- Regular Expression Field -->
+			<div class="form-group">
+				<bx:input 
+					type="text" 
+					name="productCode" 
+					id="productCode"
+					label="Product Code (Format: ABC-1234)"
+					validate="regular_expression"
+					pattern="[A-Z]{3}-[0-9]{4}"
+					value="ABC-1234"
+					message="Please enter a valid product code (e.g., ABC-1234)"
+					required="true"
+				/>
+			</div>
+
+			<!-- Submit Button -->
+			<div class="form-group">
+				<bx:input 
+					type="submit" 
+					name="submitBtn" 
+					value="Submit Form"
+				/>
+			</div>
+		</bx:form>
+
+	</div>
+</body>
+</html>
