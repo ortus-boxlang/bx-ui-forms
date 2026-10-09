@@ -18,6 +18,23 @@ The majority of attributes to these components serve as pass-through attributes 
 * `passthrough` - this is a list of passthrough attributes which will be added to the form tag.  
 * `scriptsrc` - this defines an external location for the custom forms javascript file, which is sourced into the HTML output
 * `preservedata` - When the form action  posts back to the page that contains the form, this attribute determines whether to override the control values with the submitted values.
+* `id` - defaults to `name` when omitted. `action`, `method`, and `onsubmit` pass through; supplying `action` defaults `method` to `post`.
+
+### AJAX Binds
+
+AJAX binds require `bx-ui-compat`, included as a module dependency. Forms containing bound inputs or selects automatically import `ajax-core.js`, `ajaxproxy.js`, and `ajax-core.css` before the form markup. Ordinary forms do not import this runtime. The import is safely skipped if the compatibility module is unavailable.
+
+```cfml
+<cfform name="catalogForm" action="catalog.cfm">
+	<cfinput name="category" />
+	<cfselect name="products" bind="cfc:CatalogService.getProducts({category})" bindonload="true"
+		value="id" display="name"></cfselect>
+</cfform>
+```
+
+`input` and `select` preserve `bind`, `bindattribute`, `bindonload`, `onbinderror`, and `onbindsuccess` as lowercase HTML attributes. The client scanner wires CFC, URL, JavaScript, and local binds, registers source listeners and `ColdFusion.bindHandlerCache`, and evaluates `bindonload` binds on window load. Run `BXUICompat.Bind.scan(root)` after AJAX content swaps. Standalone controls require an explicit `<bx:ajaximport tags="form" />` before their markup.
+
+Select `id` defaults to `name`. Bound selects with `value`/`display` or a server-side `query` emit `BXUICompat.initSelect` column and selection metadata; otherwise query results use the first column as value and the second as display. No server-generated bind registration is needed.
 
 #### Unsupported `form` Component Attributes
 
@@ -49,7 +66,6 @@ The following have not yet been implemented in the `input` component but are pla
 * `autosuggestminlength` - Valid only for `type="text"`. The minimum number of characters required in the text box before invoking a bind expression to return items for suggestion.
 * `delimiter` - Optional delimiter which informs the `autosuggest` attribute
 * `maxresultsdisplayed` - Optional numeric value which informs the max result displayed by the autosuggest
-* `onbinderror` - The name of a JavaScript function to execute if evaluating a bind expression, including an autosuggest bind expression, results in an error. The function must take two attributes: an HTTP status code and a message.
 * `showautosuggestloadingicon` - A Boolean value that specifies whether to display an animated icon when loading an autosuggest value for a text input.
 * `typeahead` - A Boolean value that specifies whether the autosuggest feature should automatically complete a user's entry with the first result in the suggestion list.
 * `validate` - Supported validation types include: `date`, `time`, `float`, `integer`, `telephone`, `zipcode`, `creditcard`, `social_security_number`, and `regular_expression`.
@@ -67,9 +83,10 @@ This module uses Vitest with a JSDOM environment for automated JavaScript valida
 
 Coverage output is written to `build/reports/js-coverage`.
 
+AJAX integration tests load the real `bx-ui-compat` module/assets from `src/test/resources/modules/bx-ui-compat` or a sibling `bx-ui-compat/src/main/bx` checkout. Set `BX_UI_COMPAT_DIR` to a module directory containing `ModuleConfig.bx` and `public/js` to override this location.
+
 #### Unsupported `input` Component Attributes
 
-* `bind` - this attribute is unsupported and will throw an error if used
 * `validateAt` - Since the `validate` attribute passes through to an HTML5 `type` attribute on the tag, this attribute is not supported
 
 ### `slider`

@@ -12,6 +12,8 @@ class{
 
 	/**
 	 * This component provides the Select tag for the form
+	 * Defaults id to name and preserves AJAX bind attributes for the client scanner.
+	 * Bound selects with known columns emit initSelect metadata, not bind registration.
 	 *
 	 * <pre>
 	 * <bx:select query="cities" group="state" value="abbreviation" display="name" queryposition="after">
@@ -44,7 +46,17 @@ class{
 		    }
 		);
 
-		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable" ];
+		if( isNull( attributes.id ) ){
+			attributes.id = attributes.name;
+		}
+		if( !isNull( attributes.bind ) ){
+			var formState = context.findClosestComponent( "Form" );
+			if( !isNull( formState ) ){
+				formState.ajaxRequired = true;
+			}
+		}
+
+		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable", "bind", "bindattribute", "bindonload", "onbinderror", "onbindsuccess" ];
 		var conditionalAtrributes = [ "disabled", "autofocus", "ondblclick" ];
 		var evaluativeAttributes = [ "label", "selected", "enabled", "passthrough" ];
 		var promotedAttributes = [ "datasrc", "dataformatas", "dir", "lang" ]
@@ -67,6 +79,11 @@ class{
 
 		attributes.filter( ( key ) => isHTMLAttribute( key ) ).each( ( key, value ) => {
 			tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+		} );
+		[ "bind", "bindattribute", "bindonload", "onbinderror", "onbindsuccess" ].each( ( key ) => {
+			if( !isNull( attributes[ key ] ) ){
+				tagContent &= " #key#=""#encodeForHTMLAttribute( attributes[ key ] )#""";
+			}
 		} );
 
 		if( !isNull( attributes.passthrough ) ){
@@ -177,6 +194,17 @@ class{
 
 
 		tagContent &= " </select>";
+
+		if( !isNull( attributes.bind ) && ( !isNull( attributes.value ) || !isNull( attributes.display ) || !isNull( attributes.query ) ) ){
+			var valueColumn = !isNull( attributes.value ) ? attributes.value : ( !isNull( attributes.query ) ? optionsQuery.getColumnArray().first() : "" );
+			var displayColumn = !isNull( attributes.display ) ? attributes.display : valueColumn;
+			var selectedValues = !isNull( attributes.selected )
+				? ( isArray( attributes.selected ) ? attributes.selected : listToArray( attributes.selected ) )
+				: [];
+			var selectConfig = [ attributes.id, valueColumn, displayColumn, selectedValues ]
+				.map( ( item ) => JSONSerialize( item ).replace( "<", "\u003c", "all" ) ).toList( "," );
+			tagContent &= "<script>if(window.BXUICompat){BXUICompat.initSelect(#selectConfig#);}</script>";
+		}
 
 		if( !isNull( attributes.label ) ){
 			tagContent = "<label for=""#attributes.id#"">#attributes.label#</label>" & tagContent;

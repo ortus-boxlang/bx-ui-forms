@@ -1,4 +1,5 @@
 import java:ortus.boxlang.runtime.scopes.Key as KeyClass;
+import java:ortus.boxlang.runtime.BoxRuntime;
 
 /**
  * Boxlang Component Which Generates the Form Tag
@@ -10,6 +11,8 @@ class{
 
 	/**
 	 * The Form UI component
+	 * Defaults the HTML id to name and the method to post when action is supplied.
+	 * Imports the optional UI compatibility runtime before markup only for AJAX controls.
 	 *
 	 * <pre>
 	 * <bx:form format="html" action="http://www.google.com" method="post">...</bx:form>
@@ -42,8 +45,12 @@ class{
 		var nonHTMLAttributes = [ "format", "passthrough", "scriptsrc", "preservedata" ];
 		var unsupportedAttributes = [ "enablecab", "skin", "preloader", "timeout", "wmode", "accessible", "archive", "codebase" ];
 
-		// TODO: Should we add our own ID to the forms if not supplied and ajax functionality is enabled?
-		// param attributes.id = listLast( lcase( createUUID() ), "-" );
+		if( isNull( attributes.id ) && !isNull( attributes.name ) ){
+			attributes.id = attributes.name;
+		}
+		if( isNull( attributes.method ) && !isNull( attributes.action ) ){
+			attributes.method = "post";
+		}
 
 		unsupportedAttributes.each( ( key ) => {
 			if( !isNull( attributes[ key ] ) ){
@@ -78,6 +85,17 @@ class{
 			}
 		}
 
+		var buffer = newBuffer();
+		var bodyResult = processBody( context, body, buffer );
+		if( bodyResult.isEarlyExit() ){
+			return bodyResult;
+		}
+		var formContents = buffer.toString();
+		if( ( !isNull( executionState.ajaxRequired ) || !isNull( attributes.bind ) )
+			&& BoxRuntime.getInstance().getComponentService().hasComponent( "AjaxImport" ) ){
+			context.invokeComponent( KeyClass.of( "AjaxImport" ), { "tags" : "form" }, null );
+		}
+
 		// Default to the module's public script if not provided
 		var scriptSrc = !isNull( attributes.scriptsrc ) 
 			? attributes.scriptsrc 
@@ -85,12 +103,6 @@ class{
 		context.writeToBuffer( "<script type=""application/javascript"" src=""#scriptSrc#""></script>" );
 
 		context.writeToBuffer( tagContent & ">" );
-
-		// A buffer to capture the body output
-		var buffer		= newBuffer();
-		var	bodyResult	= processBody( context, body, buffer );
-
-		var formContents	= buffer.toString();
 
 		context.writeToBuffer( formContents );
 

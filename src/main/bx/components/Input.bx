@@ -11,6 +11,8 @@ class{
 
 	/**
 	 * The Input Form Component
+	 * Preserves bind attributes for the compatibility scanner and marks AJAX forms.
+	 * Autosuggest arrays are emitted as delimiter-separated values for compatibility.
 	 *
 	 * <pre>
 	 * <bx:input name="foo" type="text" value="" range="1,10" message="The input range must be between 1 an 10" />
@@ -42,19 +44,17 @@ class{
 			attributes.type = "text";
 		}
 
-		var AJAXAttributes = [ "autosuggest", "autosuggestbinddelay", "autosuggestminlength", "delimiter", "maxresultsdisplayed", "onbinderror", "showautosuggestloadingicon", "typeahead", "autocomplete", "sourcefortooltip" ];
-		var nonHTMLAttributes = [ "range", "validate", "dateformat", "pattern", "bindattribute", "bindonload", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
-		var unsupportedAttributes = [ "bind", "validateAt" ];
+		var AJAXAttributes = [ "bind", "bindattribute", "bindonload", "onbinderror", "onbindsuccess", "autosuggest", "autosuggestbinddelay", "autosuggestminlength", "delimiter", "maxresultsdisplayed", "showautosuggestloadingicon", "typeahead", "sourcefortooltip" ];
+		var nonHTMLAttributes = [ "range", "validate", "dateformat", "pattern", "onvalidate", "form", "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget", "daynames", "firstdayofweek", "monthnames" ];
+		var unsupportedAttributes = [ "validateAt" ];
 		var conditionalAtrributes = [ "checked", "disabled", "autofocus" ];
 		var evaluativeAttributes = [ "label", "message", "passthrough" ];
 
-		// TODO: For now disable all ajax attributes until we implement them in the JS
-		if( AJAXAttributes.some( ( key ) => !isNull( attributes[ key ] )  ) ){
-			var foundUnsupported = attributes.keyArray().filter( ( key )=> AJAXAttributes.contains( key ) );
-			throw(
-				type		= "boxlang.forms.UnsupportedAttributeException",
-				message		= "The AJAX attributes #foundUnsupported.toList()# are not yet supported by the forms Input component"
-			);
+		if( !isNull( attributes.bind ) || !isNull( attributes.autosuggest ) ){
+			var formState = context.findClosestComponent( formComponentName );
+			if( !isNull( formState ) ){
+				formState.ajaxRequired = true;
+			}
 		}
 		var isHTMLAttribute = ( key ) => !AJAXAttributes.contains( key ) && !nonHTMLAttributes.contains( key ) && !unsupportedAttributes.contains( key ) && !conditionalAtrributes.contains( key ) && !evaluativeAttributes.contains( key );
 
@@ -80,6 +80,15 @@ class{
 
 		attributes.filter( ( key ) => isHTMLAttribute( key ) ).each( ( key, value ) => {
 			tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+		} );
+		AJAXAttributes.each( ( key ) => {
+			if( !isNull( attributes[ key ] ) ){
+				var value = attributes[ key ];
+				if( key == "autosuggest" && isArray( value ) ){
+					value = value.toList( !isNull( attributes.delimiter ) ? attributes.delimiter : "," );
+				}
+				tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+			}
 		} );
 
 		if( !isNull( attributes.passthrough ) ){
