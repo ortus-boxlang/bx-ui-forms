@@ -2,15 +2,12 @@ package ortus.boxlang.modules.forms.components;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import ortus.boxlang.compiler.parser.BoxSourceType;
+import ortus.boxlang.modules.forms.StubAjaxImport;
 import ortus.boxlang.runtime.BoxRuntime;
-import ortus.boxlang.runtime.modules.ModuleRecord;
 import ortus.boxlang.runtime.scopes.Key;
 
 public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrationTest {
@@ -187,45 +184,41 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 	}
 
 	/**
-	 * Loads the real compatibility module from the test installation or source checkout.
-	 * BX_UI_COMPAT_DIR can override the module directory for other development layouts.
+	 * Registers a stub AjaxImport so the forms module can verify it emits the AJAX runtime before
+	 * the form markup. The real component's asset output is owned and tested by bx-ui-compat.
 	 */
-	private void loadAjaxRuntime() {
-		if ( runtime.getComponentService().hasComponent( "AjaxImport" ) ) {
-			return;
-		}
-		String	override	= System.getenv( "BX_UI_COMPAT_DIR" );
-		Path	modulePath	= override == null ? Path.of( "src/test/resources/modules/bx-ui-compat" ) : Path.of( override );
-		if ( override == null && !Files.exists( modulePath.resolve( "ModuleConfig.bx" ) ) ) {
-			modulePath = Path.of( "../bx-ui-compat/src/main/bx" );
-		}
-		assertTrue( Files.exists( modulePath.resolve( "ModuleConfig.bx" ) ), "Install bx-ui-compat or set BX_UI_COMPAT_DIR" );
-		ModuleRecord compatModule = new ModuleRecord( modulePath.toAbsolutePath().toString() );
-		moduleService.getRegistry().put( Key.of( "bx-ui-compat" ), compatModule );
-		compatModule.loadDescriptor( context ).register( context ).activate( context );
+	private StubAjaxImport registerStubAjaxImport() {
+		StubAjaxImport stub = new StubAjaxImport();
+		// A pre-built instance bypasses ComponentDescriptor's name assignment, so set it here.
+		stub.setName( Key.of( "AjaxImport" ) );
+		runtime.getComponentService().registerComponent( StubAjaxImport.class, stub, null );
+		return stub;
 	}
 
 	/**
-	 * Verifies CF select bind attributes and runtime imports preceding the form markup.
+	 * Verifies bound selects pass through bind attributes and invoke the AJAX runtime before the form markup.
 	 */
 	@Test
 	public void testSelectAjaxBind() {
-		loadAjaxRuntime();
-		runtime.executeSource( """
-		                       <cfform name="form1">
-		                           <cfinput name="other" />
-		                           <cfselect name="x" bind="cfc:svc.getData({other})" bindOnLoad="true"></cfselect>
-		                       </cfform>
-		                       <cfset result = getBoxContext().getBuffer().toString()>
-		                       """, context, BoxSourceType.CFTEMPLATE );
-		String output = variables.getAsString( result );
-		assertTrue( output.contains( "id=\"x\"" ) );
-		assertTrue( output.contains( "bind=" ) );
-		assertTrue( output.contains( "bindonload=\"true\"" ) );
-		assertTrue( output.contains( "ajaxproxy.js" ) );
-		assertTrue( output.contains( "ajax-core.css" ) );
-		assertTrue( output.indexOf( "ajax-core.js" ) >= 0 && output.indexOf( "ajax-core.js" ) < output.indexOf( "<form" ) );
-		assertTrue( !output.contains( "ColdFusion.Bind.register" ) );
+		StubAjaxImport stub = registerStubAjaxImport();
+		try {
+			runtime.executeSource( """
+			                       <cfform name="form1">
+			                           <cfinput name="other" />
+			                           <cfselect name="x" bind="cfc:svc.getData({other})" bindOnLoad="true"></cfselect>
+			                       </cfform>
+			                       <cfset result = getBoxContext().getBuffer().toString()>
+			                       """, context, BoxSourceType.CFTEMPLATE );
+			String output = variables.getAsString( result );
+			assertTrue( output.contains( "id=\"x\"" ) );
+			assertTrue( output.contains( "bind=" ) );
+			assertTrue( output.contains( "bindonload=\"true\"" ) );
+			assertTrue( output.indexOf( "data-stub-ajaximport" ) >= 0 && output.indexOf( "data-stub-ajaximport" ) < output.indexOf( "<form" ) );
+			assertTrue( stub.lastTags.equals( "form" ) );
+			assertTrue( !output.contains( "ColdFusion.Bind.register" ) );
+		} finally {
+			runtime.getComponentService().unregisterComponent( Key.of( "AjaxImport" ) );
+		}
 	}
 
 	/**
@@ -233,7 +226,6 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 	 */
 	@Test
 	public void testBindMetadataAndCallbacks() {
-		loadAjaxRuntime();
 		runtime.executeSource( """
 		                       <cfform name="form1">
 		                           <cfinput name="other" bind="url:data.cfm" bindAttribute="value" bindOnLoad="true"
@@ -268,7 +260,8 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 	}
 
 	/**
-	 * Verifies bound forms remain renderable when the optional AjaxImport component is absent.
+	 * Verifies bound forms remain renderable, without importing the AJAX runtime, when no AjaxImport
+	 * component is available (i.e. bx-ui-compat is not installed).
 	 */
 	@Test
 	public void testBindWithoutCompat() {
@@ -286,7 +279,7 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 			assertTrue( output.contains( "id=\"explicit\"" ) );
 			assertTrue( output.contains( "method=\"get\"" ) );
 			assertTrue( output.contains( "id=\"x\"" ) );
-			assertTrue( !output.contains( "ajax-core.js" ) );
+			assertTrue( !output.contains( "data-stub-ajaximport" ) );
 		} finally {
 			if ( ajaxImport != null ) {
 				componentService.registerComponent( ajaxImport, true );

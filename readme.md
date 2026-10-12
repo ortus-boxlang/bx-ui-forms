@@ -22,7 +22,7 @@ The majority of attributes to these components serve as pass-through attributes 
 
 ### AJAX Binds
 
-AJAX binds require `bx-ui-compat`, included as a module dependency. Forms containing bound inputs or selects automatically import `ajax-core.js`, `ajaxproxy.js`, and `ajax-core.css` before the form markup. Ordinary forms do not import this runtime. The import is safely skipped if the compatibility module is unavailable.
+AJAX binds require `bx-ui-compat` to be installed by the application; it is not a runtime dependency of this module. Forms containing bound inputs or selects automatically import `ajax-core.js`, `ajaxproxy.js`, and `ajax-core.css` before the form markup when the compatibility module is available. Ordinary forms do not import this runtime, and the import is safely skipped when the compatibility module is unavailable.
 
 ```cfml
 <cfform name="catalogForm" action="catalog.cfm">
@@ -83,7 +83,7 @@ This module uses Vitest with a JSDOM environment for automated JavaScript valida
 
 Coverage output is written to `build/reports/js-coverage`.
 
-AJAX integration tests load the real `bx-ui-compat` module/assets from `src/test/resources/modules/bx-ui-compat` or a sibling `bx-ui-compat/src/main/bx` checkout. Set `BX_UI_COMPAT_DIR` to a module directory containing `ModuleConfig.bx` and `public/js` to override this location.
+The Java tests verify the forms module's own output - form/select defaults, bind attribute pass-through and `BXUICompat.initSelect` metadata - plus that an `AjaxImport` component is invoked before the form markup when a form is bound. They register a stub `AjaxImport` for that check and do not depend on `bx-ui-compat`. The compatibility module's AJAX runtime (`<bx:ajaximport>` asset output and the client-side bind scanner) is owned and tested by `bx-ui-compat`.
 
 #### Unsupported `input` Component Attributes
 
