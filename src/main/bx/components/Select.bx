@@ -235,14 +235,10 @@ class{
 
 		var resolvedEndpoint = "";
 		try {
-			if( BoxRuntime.getInstance().getFunctionService().hasGlobalFunction( KeyClass.of( "UIResolveComponentEndpoint" ) ) ){
-				resolvedEndpoint = UIResolveComponentEndpoint( cfcName );
-			} else {
-				var inst = new "#cfcName#"();
-				var rfp = inst.$bx.invokeTargetMethod( context, "getRunnablePath", [] );
-				if( !isNull( rfp ) && len( rfp.relativePath() ) ){
-					resolvedEndpoint = replace( rfp.relativePath(), "\", "/", "all" );
-				}
+			var inst = new "#cfcName#"();
+			var rfp = inst.$bx.invokeTargetMethod( context, "getRunnablePath", [] );
+			if( !isNull( rfp ) && len( rfp.relativePath() ) ){
+				resolvedEndpoint = replace( rfp.relativePath(), "\", "/", "all" );
 			}
 		} catch ( any e ) {
 			// Leave unresolved if component lookup fails
