@@ -425,12 +425,23 @@
 	}
 
 	/**
+	 * Determine whether an event target is an element that supports attribute checks.
+	 * Delegated document/window listeners can receive non-element targets (e.g. document
+	 * itself), which do not implement hasAttribute() and would throw in some browsers.
+	 * @param {EventTarget} target - The event target from a delegated listener
+	 * @returns {boolean} - True when the target is an Element
+	 */
+	function isElement(target) {
+		return target instanceof Element;
+	}
+
+	/**
 	 * Initialize form validation
 	 */
 	function init() {
 		// Attach blur validation to all inputs with data-validate
 		document.addEventListener('blur', function (e) {
-			if (e.target.hasAttribute('data-validate')) {
+			if (isElement(e.target) && e.target.hasAttribute('data-validate')) {
 				validateInput(e.target);
 			}
 		}, true);
@@ -438,7 +449,7 @@
 		// Attach form submission validation
 		document.addEventListener('submit', function (e) {
 			const form = e.target;
-			if (form.tagName === 'FORM') {
+			if (isElement(form) && form.tagName === 'FORM') {
 				if (!validateForm(form)) {
 					e.preventDefault();
 				}
@@ -447,7 +458,8 @@
 
 		// Clear error on input
 		document.addEventListener('input', function (e) {
-			if (e.target.hasAttribute('data-validate') &&
+			if (isElement(e.target) &&
+				e.target.hasAttribute('data-validate') &&
 				e.target.classList.contains('bx-forms-error')) {
 				// Debounce validation while user is typing
 				clearTimeout(e.target._validationTimeout);

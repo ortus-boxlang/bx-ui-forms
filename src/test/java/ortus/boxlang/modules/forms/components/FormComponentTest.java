@@ -2,11 +2,11 @@ package ortus.boxlang.modules.forms.components;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import ortus.boxlang.compiler.parser.BoxSourceType;
+import ortus.boxlang.modules.forms.StubAjaxImport;
 import ortus.boxlang.runtime.BoxRuntime;
 import ortus.boxlang.runtime.scopes.Key;
 
@@ -14,6 +14,26 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 
 	static BoxRuntime	instance;
 	static Key			result	= Key.of( "result" );
+
+	/**
+	 * Verifies CF form defaults and passthrough submission attributes.
+	 */
+	@DisplayName( "It defaults form id and submission method" )
+	@Test
+	public void testFormDefaults() {
+		runtime.executeSource( """
+		                       <cfform name="form1" action="index.cfm" onsubmit="return checkForm()">
+		                           <cfinput name="other" />
+		                       </cfform>
+		                       <cfset result = getBoxContext().getBuffer().toString()>
+		                       """, context, BoxSourceType.CFTEMPLATE );
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "id=\"form1\"" ) );
+		assertTrue( output.contains( "action=\"index.cfm\"" ) );
+		assertTrue( output.contains( "method=\"post\"" ) );
+		assertTrue( output.contains( "onsubmit=" ) );
+		assertTrue( !output.contains( "ajax-core.js" ) );
+	}
 
 	@DisplayName( "It can test the FormComponent with basic nested tags" )
 	@Test
@@ -137,15 +157,13 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		assertTrue( output.contains( "<option value=\"MI\" selected>Michigan</option>" ) );
 	}
 
-	// TODO: Enable when we add ajax support
 	@DisplayName( "It can test the Input component with a typeahead options as a variable binding" )
 	@Test
-	@Disabled
 	public void testInpjtComponentTypeaheadVariable() {
 		// @formatter:off
 		runtime.executeSource( """
 		<cfscript>
-		var countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
+		countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla","Antigua &amp; Barbuda","Argentina","Armenia","Aruba","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia &amp; Herzegovina","Botswana","Brazil","British Virgin Islands","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Cayman Islands","Central Arfrican Republic","Chad","Chile","China","Colombia","Congo","Cook Islands","Costa Rica","Cote D Ivoire","Croatia","Cuba","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands","Faroe Islands","Fiji","Finland","France","French Polynesia","French West Indies","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guam","Guatemala","Guernsey","Guinea","Guinea Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Isle of Man","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauro","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","North Korea","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russia","Rwanda","Saint Pierre &amp; Miquelon","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","St Kitts &amp; Nevis","St Lucia","St Vincent","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor L'Este","Togo","Tonga","Trinidad &amp; Tobago","Tunisia","Turkey","Turkmenistan","Turks &amp; Caicos","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Virgin Islands (US)","Yemen","Zambia","Zimbabwe"];
 		</cfscript>
 		<cfform action="index.cfm" method="post">
 			<cfinput name="typeahead" type="text" autosuggest="#countries#" autosuggestMinLength="3" />
@@ -161,9 +179,112 @@ public class FormComponentTest extends ortus.boxlang.modules.forms.BaseIntegrati
 		assertTrue( output.contains( "<form" ) );
 		assertTrue( output.contains( "</form>" ) );
 		assertTrue( output.contains( "action=\"index.cfm\" method=\"post\"" ) );
-		assertTrue( output.contains( "<optgroup label=\"Canada\">" ) );
-		assertTrue( output.contains( "<option value=\"ON\" >Ontario</option>" ) );
-		assertTrue( output.contains( "<option value=\"MI\" selected>Michigan</option>" ) );
+		assertTrue( output.contains( "autosuggest=" ) );
+		assertTrue( output.contains( "autosuggestminlength=\"3\"" ) );
+	}
+
+	/**
+	 * Registers a stub AjaxImport so the forms module can verify it emits the AJAX runtime before
+	 * the form markup. The real component's asset output is owned and tested by bx-ui-compat.
+	 */
+	private StubAjaxImport registerStubAjaxImport() {
+		StubAjaxImport stub = new StubAjaxImport();
+		// A pre-built instance bypasses ComponentDescriptor's name assignment, so set it here.
+		stub.setName( Key.of( "AjaxImport" ) );
+		runtime.getComponentService().registerComponent( StubAjaxImport.class, stub, null );
+		return stub;
+	}
+
+	/**
+	 * Verifies bound selects pass through bind attributes and invoke the AJAX runtime before the form markup.
+	 */
+	@Test
+	public void testSelectAjaxBind() {
+		StubAjaxImport stub = registerStubAjaxImport();
+		try {
+			runtime.executeSource( """
+			                       <cfform name="form1">
+			                           <cfinput name="other" />
+			                           <cfselect name="x" bind="cfc:svc.getData({other})" bindOnLoad="true"></cfselect>
+			                       </cfform>
+			                       <cfset result = getBoxContext().getBuffer().toString()>
+			                       """, context, BoxSourceType.CFTEMPLATE );
+			String output = variables.getAsString( result );
+			assertTrue( output.contains( "id=\"x\"" ) );
+			assertTrue( output.contains( "bind=" ) );
+			assertTrue( output.contains( "bindonload=\"true\"" ) );
+			assertTrue( output.indexOf( "data-stub-ajaximport" ) >= 0 && output.indexOf( "data-stub-ajaximport" ) < output.indexOf( "<form" ) );
+			assertTrue( stub.lastTags.equals( "form" ) );
+			assertTrue( !output.contains( "ColdFusion.Bind.register" ) );
+		} finally {
+			runtime.getComponentService().unregisterComponent( Key.of( "AjaxImport" ) );
+		}
+	}
+
+	/**
+	 * Verifies explicit select metadata and supported input bind callbacks.
+	 */
+	@Test
+	public void testBindMetadataAndCallbacks() {
+		runtime.executeSource( """
+		                       <cfform name="form1">
+		                           <cfinput name="other" bind="url:data.cfm" bindAttribute="value" bindOnLoad="true"
+		                               onBindError="bindError" onBindSuccess="bindSuccess" />
+		                           <cfselect name="x" id="custom" bind="cfc:svc.getData({other})"
+		                               value="code" display="label" selected="MI"></cfselect>
+		                       </cfform>
+		                       <cfset result = getBoxContext().getBuffer().toString()>
+		                       """, context, BoxSourceType.CFTEMPLATE );
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "BXUICompat.initSelect(\"custom\",\"code\",\"label\",[\"MI\"])" ) );
+		assertTrue( output.contains( "bindattribute=\"value\"" ) );
+		assertTrue( output.contains( "bindonload=\"true\"" ) );
+		assertTrue( output.contains( "onbinderror=\"bindError\"" ) );
+		assertTrue( output.contains( "onbindsuccess=\"bindSuccess\"" ) );
+	}
+
+	/**
+	 * Verifies metadata inferred from a server query preserves the tag's option columns.
+	 */
+	@Test
+	public void testSelectBoundQueryColumns() {
+		runtime.executeSource( """
+		                       <cfset options = queryNew("code,label", "varchar,varchar", [{code="MI",label="Michigan"}])>
+		                       <cfform name="form1">
+		                           <cfselect name="states" query="options" bind="cfc:svc.getData()" selected="MI"></cfselect>
+		                       </cfform>
+		                       <cfset result = getBoxContext().getBuffer().toString()>
+		                       """, context, BoxSourceType.CFTEMPLATE );
+		String output = variables.getAsString( result );
+		assertTrue( output.contains( "BXUICompat.initSelect(\"states\",\"code\",\"code\",[\"MI\"])" ) );
+	}
+
+	/**
+	 * Verifies bound forms remain renderable, without importing the AJAX runtime, when no AjaxImport
+	 * component is available (i.e. bx-ui-compat is not installed).
+	 */
+	@Test
+	public void testBindWithoutCompat() {
+		var	componentService	= runtime.getComponentService();
+		var	ajaxImport			= componentService.getComponent( "AjaxImport" );
+		componentService.unregisterComponent( Key.of( "AjaxImport" ) );
+		try {
+			runtime.executeSource( """
+			                       <cfform name="form1" id="explicit" action="index.cfm" method="get">
+			                           <cfselect name="x" bind="cfc:svc.getData()" bindonload="true"></cfselect>
+			                       </cfform>
+			                       <cfset result = getBoxContext().getBuffer().toString()>
+			                       """, context, BoxSourceType.CFTEMPLATE );
+			String output = variables.getAsString( result );
+			assertTrue( output.contains( "id=\"explicit\"" ) );
+			assertTrue( output.contains( "method=\"get\"" ) );
+			assertTrue( output.contains( "id=\"x\"" ) );
+			assertTrue( !output.contains( "data-stub-ajaximport" ) );
+		} finally {
+			if ( ajaxImport != null ) {
+				componentService.registerComponent( ajaxImport, true );
+			}
+		}
 	}
 
 	@DisplayName( "It can test the Input component with date validation using default format" )

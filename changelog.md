@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- AJAX input/select bind attribute pass-through and automatic, guarded `AjaxImport` runtime imports for AJAX forms.
+- Select column/selection metadata (`BXUICompat.initSelect`) for known value/display/query columns.
+
+### Fixed
+
+- Default form/select IDs to their names and form submission methods to `post` when an action is supplied.
+- Preserve lowercase input bind callbacks and options instead of rejecting or dropping them.
+- Enable the typeahead attribute-rendering test with assertions matching its input markup.
+
+### Notes
+
+- `bx-ui-compat` is not a runtime dependency. Forms invoke `<bx:ajaximport tags="form" />` only when a form is bound and the component is available. Tests use a stub `AjaxImport`; the compatibility module's own assets and client scanner are tested in `bx-ui-compat`.
+
 ## [1.2.1] - 2026-08-12
 
 ## [1.2.0] - 2026-04-30

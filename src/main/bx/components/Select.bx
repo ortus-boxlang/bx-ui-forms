@@ -12,6 +12,8 @@ class{
 
 	/**
 	 * This component provides the Select tag for the form
+	 * Defaults id to name and preserves AJAX bind attributes for the client scanner.
+	 * Bound selects with known columns emit initSelect metadata, not bind registration.
 	 *
 	 * <pre>
 	 * <bx:select query="cities" group="state" value="abbreviation" display="name" queryposition="after">
@@ -44,7 +46,19 @@ class{
 		    }
 		);
 
-		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable" ];
+		if( isNull( attributes.id ) ){
+			attributes.id = attributes.name;
+		}
+		if( !isNull( attributes.bind ) ){
+			var formState = context.findClosestComponent( "Form" );
+			if( !isNull( formState ) ){
+				formState.ajaxRequired = true;
+			}
+			// Resolve component endpoint so the emitted bind URL points to the exact server-resolved file
+			attributes.bind = resolveCfcBindExpression( context, attributes.bind );
+		}
+
+		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable", "bind", "bindattribute", "bindonload", "onbinderror", "onbindsuccess" ];
 		var conditionalAtrributes = [ "disabled", "autofocus", "ondblclick" ];
 		var evaluativeAttributes = [ "label", "selected", "enabled", "passthrough" ];
 		var promotedAttributes = [ "datasrc", "dataformatas", "dir", "lang" ]
@@ -67,6 +81,11 @@ class{
 
 		attributes.filter( ( key ) => isHTMLAttribute( key ) ).each( ( key, value ) => {
 			tagContent &= " #key#=""#encodeForHTMLAttribute( value )#""";
+		} );
+		[ "bind", "bindattribute", "bindonload", "onbinderror", "onbindsuccess" ].each( ( key ) => {
+			if( !isNull( attributes[ key ] ) ){
+				tagContent &= " #key#=""#encodeForHTMLAttribute( attributes[ key ] )#""";
+			}
 		} );
 
 		if( !isNull( attributes.passthrough ) ){
@@ -178,11 +197,60 @@ class{
 
 		tagContent &= " </select>";
 
+		if( !isNull( attributes.bind ) && ( !isNull( attributes.value ) || !isNull( attributes.display ) || !isNull( attributes.query ) ) ){
+			var valueColumn = !isNull( attributes.value ) ? attributes.value : ( !isNull( attributes.query ) ? optionsQuery.getColumnArray().first() : "" );
+			var displayColumn = !isNull( attributes.display ) ? attributes.display : valueColumn;
+			var selectedValues = !isNull( attributes.selected )
+				? ( isArray( attributes.selected ) ? attributes.selected : listToArray( attributes.selected ) )
+				: [];
+			var selectConfig = [ attributes.id, valueColumn, displayColumn, selectedValues ]
+				.map( ( item ) => JSONSerialize( item ).replace( "<", "\u003c", "all" ) ).toList( "," );
+			tagContent &= "<script>if(window.BXUICompat){BXUICompat.initSelect(#selectConfig#);}</script>";
+		}
+
 		if( !isNull( attributes.label ) ){
 			tagContent = "<label for=""#attributes.id#"">#attributes.label#</label>" & tagContent;
 		}
 
 		context.writeToBuffer( tagContent );
+	}
+
+	/**
+	 * Resolves a cfc: bind expression to an exact relative web path (/sub/Service.cfc or /path/Service.bx).
+	 */
+	private function resolveCfcBindExpression( required context, required string bindExpr ){
+		if( !bindExpr.startsWith( "cfc:" ) ){
+			return bindExpr;
+		}
+		var rawCall = bindExpr.substring( 4 );
+		var parenPos = rawCall.indexOf( "(" );
+		var callPath = parenPos > 0 ? rawCall.substring( 0, parenPos ) : rawCall;
+		var lastDot = callPath.lastIndexOf( "." );
+		if( lastDot <= 0 ){
+			return bindExpr;
+		}
+		var cfcName = callPath.substring( 0, lastDot );
+		var methodName = callPath.substring( lastDot + 1 );
+		var rest = parenPos > 0 ? rawCall.substring( parenPos ) : "()";
+
+		var resolvedEndpoint = "";
+		try {
+			var inst = new "#cfcName#"();
+			var rfp = inst.$bx.invokeTargetMethod( context, "getRunnablePath", [] );
+			if( !isNull( rfp ) && len( rfp.relativePath() ) ){
+				resolvedEndpoint = replace( rfp.relativePath(), "\", "/", "all" );
+			}
+		} catch ( any e ) {
+			// Leave unresolved if component lookup fails
+		}
+
+		if( len( resolvedEndpoint ) ){
+			if( !resolvedEndpoint.startsWith( "/" ) ){
+				resolvedEndpoint = "/" & resolvedEndpoint;
+			}
+			return "cfc:" & resolvedEndpoint & "." & methodName & rest;
+		}
+		return bindExpr;
 	}
 
 }
