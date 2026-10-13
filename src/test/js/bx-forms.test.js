@@ -154,4 +154,12 @@ describe("bx-forms.js", () => {
 		expect(input.classList.contains("bx-forms-error")).toBe(false);
 		expect(input.getAttribute("aria-invalid")).toBe("false");
 	});
+
+	it("ignores delegated events whose target is not an element", () => {
+		// document (and window) do not implement hasAttribute(); browsers such as Firefox
+		// throw if the delegated handlers call it directly.
+		expect(() => document.dispatchEvent(new Event("blur", { bubbles: true }))).not.toThrow();
+		expect(() => document.dispatchEvent(new Event("input", { bubbles: true }))).not.toThrow();
+		expect(() => document.dispatchEvent(new Event("submit", { bubbles: true }))).not.toThrow();
+	});
 });

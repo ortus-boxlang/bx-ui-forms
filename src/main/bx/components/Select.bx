@@ -54,6 +54,8 @@ class{
 			if( !isNull( formState ) ){
 				formState.ajaxRequired = true;
 			}
+			// Resolve component endpoint so the emitted bind URL points to the exact server-resolved file
+			attributes.bind = resolveCfcBindExpression( context, attributes.bind );
 		}
 
 		var nonHTMLAttributes = [ "casesenstive", "query", "group", "queryposition", "tooltip", "visible", "editable", "bind", "bindattribute", "bindonload", "onbinderror", "onbindsuccess" ];
@@ -211,6 +213,48 @@ class{
 		}
 
 		context.writeToBuffer( tagContent );
+	}
+
+	/**
+	 * Resolves a cfc: bind expression to an exact relative web path (/sub/Service.cfc or /path/Service.bx).
+	 */
+	private function resolveCfcBindExpression( required context, required string bindExpr ){
+		if( !bindExpr.startsWith( "cfc:" ) ){
+			return bindExpr;
+		}
+		var rawCall = bindExpr.substring( 4 );
+		var parenPos = rawCall.indexOf( "(" );
+		var callPath = parenPos > 0 ? rawCall.substring( 0, parenPos ) : rawCall;
+		var lastDot = callPath.lastIndexOf( "." );
+		if( lastDot <= 0 ){
+			return bindExpr;
+		}
+		var cfcName = callPath.substring( 0, lastDot );
+		var methodName = callPath.substring( lastDot + 1 );
+		var rest = parenPos > 0 ? rawCall.substring( parenPos ) : "()";
+
+		var resolvedEndpoint = "";
+		try {
+			if( BoxRuntime.getInstance().getFunctionService().hasGlobalFunction( KeyClass.of( "UIResolveComponentEndpoint" ) ) ){
+				resolvedEndpoint = UIResolveComponentEndpoint( cfcName );
+			} else {
+				var inst = new "#cfcName#"();
+				var rfp = inst.$bx.invokeTargetMethod( context, "getRunnablePath", [] );
+				if( !isNull( rfp ) && len( rfp.relativePath() ) ){
+					resolvedEndpoint = replace( rfp.relativePath(), "\", "/", "all" );
+				}
+			}
+		} catch ( any e ) {
+			// Leave unresolved if component lookup fails
+		}
+
+		if( len( resolvedEndpoint ) ){
+			if( !resolvedEndpoint.startsWith( "/" ) ){
+				resolvedEndpoint = "/" & resolvedEndpoint;
+			}
+			return "cfc:" & resolvedEndpoint & "." & methodName & rest;
+		}
+		return bindExpr;
 	}
 
 }
